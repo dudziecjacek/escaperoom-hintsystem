@@ -21,6 +21,6 @@ io.on('connection', function (socket) {
   });
 });
 
-http.listen(port, '127.0.0.1', function () { //192.168.8.101
+http.listen(port, function () { //192.168.8.101   //'127.0.0.1'
   console.log('listening on *:' + port);
 });
