@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Helvetica, Arial;
+      background-image: url('images/serverBg.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      height: calc(100vh - 40px);
+    }
+
+    form {
+      background: #000;
+      padding: 3px;
+      position: fixed;
+      width: 100%;
+      position: absolute;
+      top: 50%;
+    }
+
+    form input {
+      border: 0;
+      padding: 10px;
+      width: 90%;
+      margin-right: .5%;
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      min-width: 300px;
+      font-size: 20px;
+    }
+
+    #messages li {
+      padding: 5px 10px;
+      color: white;
+    }
+
+    #messages li:nth-child(odd) {
+      background-color: rgba(105, 92, 175, 0.4)
+    }
+
+    #messages li:nth-child(even) {
+      background-color: rgba(105, 92, 175, 0.6)
+    }
+
+    #messages {
+      margin-bottom: 40px
+    }
+
+    .buttonContainer {
+      position: absolute;
+      top: calc(50% + 40px);
+      left: 0;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 10px;
+    }
+
+    .btn {
+      background-color: aqua;
+      border: 2px solid red;
+      width: 150px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 10px;
+      user-select: none;
+      cursor: pointer;
+      margin: 20px;
+    }
+
+    .btn:focus {
+      background-color: yellow;
+    }
+
+    .sound {
+      background-color: green;
+    }
+
+    .ending {
+      background-color: brown;
+    }
+  </style>
+</head>
+
+<body>
+  <ul id="messages"></ul>
+  <form action="">
+    <input id="m" autocomplete="off" /><button>Wyślij</button>
+  </form>
+  <div class="buttonContainer">
+    <div class="btn" data-index="0">Hint 1</div>
+    <div class="btn" data-index="1">Hint 2</div>
+    <div class="btn" data-index="2">Hint 3</div>
+    <div class="btn" data-index="3">Hint 4</div>
+    <div class="btn" data-index="4">Hint 5</div>
+    <div class="btn" data-index="5">Hint 6</div>
+    <div class="btn" data-index="6">Hint 7</div>
+    <div class="btn" data-index="7">Hint 8</div>
+    <div class="btn" data-index="8">Hint 9</div>
+    <div class="btn" data-index="9">Hint 10</div>
+    <div class="btn" data-index="10">Hint 11</div>
+    <div class="btn" data-index="11">Hint 12</div>
+    <div class="btn sound">Sound</div>
+    <div class="btn ending">Ending</div>
+  </div>
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+    const messages = document.querySelector('#messages');
+    const buttons = document.querySelectorAll('.btn');
+    const input = document.querySelector('#m');
+    const array = [];
+    fetch('text/hints.json')
+      .then(response => response.json())
+      .then(parsed => {
+        for (let key in parsed) {
+          parsed[key].forEach((el, i) => {
+            const choosenDiv = document.querySelector(`div[data-index="${i}"]`);
+            if (choosenDiv) {
+              choosenDiv.textContent = el;
+              array.push(el)
+            }
+          })
+        }
+        console.log(array);
+      });
+
+    $(function () {
+      var socket = io();
+
+      $('form').submit(function () {
+        socket.emit('chat message', $('#m').val());
+        $('#m').val('');
+        return false;
+      });
+
+      socket.on('chat message', function (msg) {
+        const li = document.createElement('li');
+        const today = new Date();
+        const time =
+          `${today.getHours()<10?'0'+today.getHours():today.getHours()}:${today.getMinutes()<10?'0'+today.getMinutes():today.getMinutes()}:${today.getSeconds()<10?'0'+today.getSeconds():today.getSeconds()}`;
+        li.appendChild(document.createTextNode(`${time}: ${msg}`));
+        messages.appendChild(li);
+        input.blur();
+      });
+    });
+
+    function insertMessage(e) {
+      input.value = e.target.textContent;
+      input.focus();
+    }
+
+    function editHint(e) {
+      e.preventDefault();
+      if (e.target.contentEditable === true) {
+        e.target.contentEditable = false;
+      } else {
+        e.target.contentEditable = true;
+        e.target.focus();
+      }
+    }
+
+    function endFocus(e) {
+      e.target.contentEditable = false;
+      console.log(e.target.dataset.index);
+    }
+
+    buttons.forEach(el => el.addEventListener('click', insertMessage));
+    // buttons.forEach(el => el.addEventListener('dblclick', editHint));
+    // buttons.forEach(el => el.addEventListener('focusout', endFocus));
+  </script>
+</body>
+
+</html>

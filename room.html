@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @font-face {
+      font-family: 'Vinque';
+      src: url(fonts/vinque.ttf);
+    }
+
+    body {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-image: url('images/bgi.png');
+      background-size: cover;
+      background-position: center center;
+      padding: 20px;
+    }
+
+    div {
+      text-align: center;
+      font-size: 50px;
+      font-family: 'Vinque';
+      color: white;
+      text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+      user-select: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="messages">dupaz</div>
+  <audio id="audioHint" src="audio/hint.wav"></audio>
+  <audio id="audioEnding" src="audio/ending.wav"></audio>
+
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+    // const audio = new Audio('audio/hint.wav');
+    // const ending = new Audio('audio/ending.wav');
+    const audioHint = document.querySelector('#audioHint');
+    const audioEnding = document.querySelector('#audioEnding');
+    const messages = document.querySelector('#messages');
+
+    (function () {
+      var socket = io();
+
+      socket.on('chat message', function (msg) {
+        if (msg === 'Ending') {
+          messages.textContent = '';
+          audioEnding.play();
+        } else if (msg === 'Sound') {
+          audioHint.play();
+        } else {
+          messages.textContent = msg;
+          audioHint.play();
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
