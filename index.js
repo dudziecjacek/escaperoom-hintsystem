@@ -2,8 +2,8 @@ const wwwhisper = require('connect-wwwhisper');
 const express = require("express");
 const app = express();
 
-app.use(wwwhisper());
-app.use(wwwhisper(false));
+// app.use(wwwhisper());
+// app.use(wwwhisper(false));
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
