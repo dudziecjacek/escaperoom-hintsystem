@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Socket.IO chat</title>
+  <title>Fox O'clock Syreny</title>
   <style>
     * {
       margin: 0;
@@ -29,7 +29,7 @@
 
     div {
       text-align: center;
-      font-size: 50px;
+      font-size: 60px;
       font-family: 'Vinque';
       color: white;
       text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
@@ -39,7 +39,7 @@
 </head>
 
 <body>
-  <div id="messages"></div>
+  <div id="messages">Witajcie w naszym magicznym świecie!</div>
   <audio id="audioHint" src="audio/hint.wav"></audio>
   <audio id="audioEnding" src="audio/ending.wav"></audio>
 
@@ -51,6 +51,11 @@
     const audioHint = document.querySelector('#audioHint');
     const audioEnding = document.querySelector('#audioEnding');
     const messages = document.querySelector('#messages');
+    const array = [];
+    const keyCodes = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 81, 87, 69, 82, 84, 89, 85, 73, 79, 80, 65, 83, 68, 70,
+      90, 86, 77
+    ];
+
 
     (function () {
       var socket = io();
@@ -67,6 +72,40 @@
         }
       });
     })();
+
+    fetch('text/hints.json')
+      .then(response => response.json())
+      .then(parsed => {
+        for (let key in parsed) {
+          parsed[key].forEach((el, i) => {
+            array.push(el)
+          })
+        }
+        console.log(array);
+      });
+
+    function forceMessage(e) {
+      const index = keyCodes.findIndex(el => el === e.which);
+      if (index < 24) {
+        messages.textContent = array[index];
+        audioHint.play();
+      } else if (index >= 24 && index < 27) {
+        switch (index) {
+          case 24:
+            messages.textContent = 'Witajcie w naszym magicznym świecie!';
+            break;
+          case 25:
+            audioHint.play();
+            break;
+          case 26:
+            messages.textContent = '';
+            audioEnding.play();
+            break;
+        }
+      }
+    }
+
+    window.addEventListener('keydown', forceMessage);
   </script>
 </body>
 

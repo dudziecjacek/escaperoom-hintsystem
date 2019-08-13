@@ -1,4 +1,4 @@
-const wwwhisper = require('connect-wwwhisper');
+// const wwwhisper = require('connect-wwwhisper');
 const express = require("express");
 const app = express();
 

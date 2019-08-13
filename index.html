@@ -73,6 +73,7 @@
       left: 0;
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
       padding: 10px;
     }
 
@@ -102,6 +103,21 @@
     .ending {
       background-color: brown;
     }
+
+    .next {
+      position: absolute;
+      bottom: 35%;
+      right: 0%;
+      transform: translateY(-50%);
+      background-color: darkblue;
+      padding: 10px;
+      color: white;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      user-select: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -125,6 +141,7 @@
     <div class="btn" data-index="11">Hint 12</div>
     <div class="btn sound">Sound</div>
     <div class="btn ending">Ending</div>
+    <div class="next">Next</div>
   </div>
   <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -132,7 +149,10 @@
     const messages = document.querySelector('#messages');
     const buttons = document.querySelectorAll('.btn');
     const input = document.querySelector('#m');
+    const nextBtn = document.querySelector('.next');
     const array = [];
+    let msgNr = 0;
+    let nextPage = false;
     fetch('text/hints.json')
       .then(response => response.json())
       .then(parsed => {
@@ -145,7 +165,7 @@
             }
           })
         }
-        console.log(array);
+        // console.log(array);
       });
 
     $(function () {
@@ -158,12 +178,27 @@
       });
 
       socket.on('chat message', function (msg) {
-        const li = document.createElement('li');
         const today = new Date();
         const time =
           `${today.getHours()<10?'0'+today.getHours():today.getHours()}:${today.getMinutes()<10?'0'+today.getMinutes():today.getMinutes()}:${today.getSeconds()<10?'0'+today.getSeconds():today.getSeconds()}`;
-        li.appendChild(document.createTextNode(`${time}: ${msg}`));
-        messages.appendChild(li);
+
+        if (msgNr < 10) {
+          const li = document.createElement('li');
+          li.appendChild(document.createTextNode(`${time}: ${msg}`));
+          li.className = `nr${msgNr}`;
+          msgNr++;
+          messages.appendChild(li);
+        } else {
+          const lis = document.querySelectorAll('ul li');
+          lis.forEach((el, i) => {
+            if (i + 1 === lis.length) {
+              el.textContent = `${time}: ${msg}`
+            } else {
+              el.textContent = document.querySelector(`.nr${i+1}`).textContent;
+            }
+          })
+
+        }
         input.blur();
       });
     });
@@ -188,7 +223,44 @@
       console.log(e.target.dataset.index);
     }
 
+    function nextHints(e) {
+      if (!nextPage) {
+        fetch('text/hints.json')
+          .then(response => response.json())
+          .then(parsed => {
+            for (let key in parsed) {
+              parsed[key].forEach((el, i) => {
+                if (i > 11) {
+                  const choosenDiv = document.querySelector(`div[data-index="${i-12}"]`);
+                  if (choosenDiv) {
+                    choosenDiv.textContent = el;
+                    // array.push(el)
+                  }
+                }
+              })
+            }
+            nextPage = !nextPage;
+          });
+      } else if (nextPage) {
+        fetch('text/hints.json')
+          .then(response => response.json())
+          .then(parsed => {
+            for (let key in parsed) {
+              parsed[key].forEach((el, i) => {
+                const choosenDiv = document.querySelector(`div[data-index="${i}"]`);
+                if (choosenDiv) {
+                  choosenDiv.textContent = el;
+                  array.push(el)
+                }
+              })
+            }
+            nextPage = !nextPage;
+          });
+      }
+    }
+
     buttons.forEach(el => el.addEventListener('click', insertMessage));
+    nextBtn.addEventListener('click', nextHints)
     // buttons.forEach(el => el.addEventListener('dblclick', editHint));
     // buttons.forEach(el => el.addEventListener('focusout', endFocus));
   </script>
