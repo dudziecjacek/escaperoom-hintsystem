@@ -61,11 +61,13 @@
       var socket = io();
 
       socket.on('chat message', function (msg) {
-        if (msg === 'Ending') {
+        if (msg === 'ENDING') {
           messages.textContent = '';
           audioEnding.play();
-        } else if (msg === 'Sound') {
+        } else if (msg === 'REMINDER') {
           audioHint.play();
+        } else if (msg === 'RESET') {
+          messages.textContent = 'Witajcie w naszym magiczym świecie!';
         } else {
           messages.textContent = msg;
           audioHint.play();
