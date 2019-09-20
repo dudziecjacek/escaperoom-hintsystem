@@ -1,6 +1,6 @@
 (function () {
-    const audioHint = document.querySelector('#audioHint');
-    const audioEnding = document.querySelector('#audioEnding');
+    // const audioHint = document.querySelector('#audioHint');
+    // const audioEnding = document.querySelector('#audioEnding');
     const messages = document.querySelector('#messages');
     const array = [];
 
@@ -11,14 +11,14 @@
         socket.on('chat message', function (msg) {
             if (msg === 'ENDING') {
                 messages.textContent = '';
-                audioEnding.play();
+                // audioEnding.play();
             } else if (msg === 'REMINDER') {
-                audioHint.play();
+                // audioHint.play();
             } else if (msg === 'RESET') {
                 messages.textContent = 'Witajcie!';
             } else {
                 messages.textContent = msg;
-                audioHint.play();
+                // audioHint.play();
             }
         });
     })();
