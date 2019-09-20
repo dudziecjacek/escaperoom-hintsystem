@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Vinque';
+    src: url(fonts/vinque.ttf);
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('../images/bgi.png');
+    background-size: cover;
+    background-position: center center;
+    padding: 20px;
+}
+
+div {
+    text-align: center;
+    font-size: 60px;
+    font-family: 'Vinque';
+    color: white;
+    text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+    user-select: none;
+}
